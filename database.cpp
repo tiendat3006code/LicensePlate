@@ -27,16 +27,18 @@ bool Database::connectToDB()
 
 void Database::queryLicensePlate(const QString &plate)
 {
-    QString command = "SELECT Name FROM LicensePlate WHERE Plate = '" + plate + "';";
+    QString command = "SELECT Name FROM dbTY_Sheet1 WHERE Plate = '" + plate + "';";
     QSqlQuery sqlQuery;
     if(!sqlQuery.exec(command)){
         qWarning(Logger::database) << "Error from database: "<< m_db.lastError().text();
         qWarning(Logger::database) << "Error from query: "<< sqlQuery.lastError().text();
+        emit controlReceivedData(true);
         return;
     }
     if (sqlQuery.next()) {
         QString name = sqlQuery.value(0).toString();
         qInfo(Logger::database) << "Name: " << name;
+        emit sendNameToDisplay(name);
         if(!this->checkState(plate)){
             this->appendTimeIn(plate);
             this->changeState(plate, true);
@@ -58,7 +60,7 @@ void Database::queryLicensePlate(const QString &plate)
 void Database::appendTimeIn(const QString &plate)
 {
     QSqlQuery sqlQuery;
-    sqlQuery.prepare("UPDATE LicensePlate SET TimeIn = :timeIn WHERE Plate = :plate");
+    sqlQuery.prepare("UPDATE dbTY_Sheet1 SET TimeIn = :timeIn WHERE Plate = :plate");
     sqlQuery.bindValue(":timeIn", QDateTime::currentDateTime().toString());
     sqlQuery.bindValue(":plate", plate);
     if(!sqlQuery.exec()){
@@ -67,12 +69,13 @@ void Database::appendTimeIn(const QString &plate)
         return;
     }
     qInfo(Logger::database) << "Append TimeIn successfully";
+    emit sendTimeToDisplay(QDateTime::currentDateTime().toString());
 }
 
 void Database::appendTimeOut(const QString &plate)
 {
     QSqlQuery sqlQuery;
-    sqlQuery.prepare("UPDATE LicensePlate SET TimeOut = :timeIn WHERE Plate = :plate");
+    sqlQuery.prepare("UPDATE dbTY_Sheet1 SET TimeOut = :timeIn WHERE Plate = :plate");
     sqlQuery.bindValue(":timeIn", QDateTime::currentDateTime().toString());
     sqlQuery.bindValue(":plate", plate);
     if(!sqlQuery.exec()){
@@ -81,11 +84,12 @@ void Database::appendTimeOut(const QString &plate)
         return;
     }
     qInfo(Logger::database) << "Append TimeOut successfully";
+    emit sendTimeToDisplay(QDateTime::currentDateTime().toString());
 }
 
 bool Database::checkState(const QString &plate)
 {
-    QString command = "SELECT State FROM LicensePlate WHERE Plate = '" + plate +"';";
+    QString command = "SELECT State FROM dbTY_Sheet1 WHERE Plate = '" + plate +"';";
     QSqlQuery sqlQuery;
     if(!sqlQuery.exec(command)){
         qWarning(Logger::database) << "Error from database: "<< m_db.lastError().text();
@@ -106,7 +110,7 @@ bool Database::checkState(const QString &plate)
 void Database::changeState(const QString &plate, bool state)
 {
     QSqlQuery sqlQuery;
-    sqlQuery.prepare("UPDATE LicensePlate SET State = :state WHERE Plate = :plate");
+    sqlQuery.prepare("UPDATE dbTY_Sheet1 SET State = :state WHERE Plate = :plate");
     if (state) {
         sqlQuery.bindValue(":state", 1);
     }

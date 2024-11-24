@@ -27,6 +27,8 @@ public slots:
 signals:
     void controlReceivedData(bool isReceived);
     void sendPlateToArduino(const QString& plate);
+    void sendNameToDisplay(const QString& name);
+    void sendTimeToDisplay(const QString& time);
 
 private:
     QSqlDatabase m_db;

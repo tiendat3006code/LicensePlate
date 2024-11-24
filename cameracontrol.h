@@ -7,6 +7,7 @@
 #include <QProcess>
 #include <QDateTime>
 #include <QStringList>
+#include <QThread>
 #include "logger.h"
 
 class CameraControl : public QObject
@@ -16,11 +17,12 @@ public:
     explicit CameraControl(QObject *parent = nullptr);
 
 public slots:
-    void takePicture(int camPos);
+    void takePicture(int camPos, bool in_out);
 
 signals:
-    void startProcessing(const QString& imageName);
+    void setPathToBeginProcessImage(const QString& imageName);
     void controlReceivedData(bool isReceived);
+    void displayImage(const QString& imgName, bool in_out);
 
 private:
     QProcess m_ps;

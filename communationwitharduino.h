@@ -23,7 +23,7 @@ public slots:
     void sendData(const QString& data);
 
 signals:
-    void vehicleDetected(int state);
+    void vehicleDetected(int state, bool in_out);
 
 private:
     QSerialPort* m_port;

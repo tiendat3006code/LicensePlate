@@ -6,6 +6,7 @@
 #include <QString>
 #include <QStringList>
 #include <QProcess>
+#include <QThread>
 #include "logger.h"
 
 class ImageProcessing : public QObject
@@ -13,7 +14,12 @@ class ImageProcessing : public QObject
     Q_OBJECT
 public:
     explicit ImageProcessing(QObject *parent = nullptr);
-    void startImgeProcessing(const QString& pictureName);
+    void setImagePath(const QString& path);
+
+private slots:
+    void runImageProcess();
+    void startImgeProcessing();
+    QString textProcessing(QString& plate);
 
 signals:
     void queryPlateFromDB(const QString& plate);
@@ -22,6 +28,8 @@ signals:
 
 private:
     QString m_command;
+    QThread *m_imageProcess;
+    QString m_imagePath;
 };
 
 #endif // IMAGEPROCESSING_H
