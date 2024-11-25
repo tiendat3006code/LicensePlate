@@ -7,6 +7,7 @@ QLoggingCategory Logger::database("Database");
 QLoggingCategory Logger::imageProcessing("Image_processing");
 QLoggingCategory Logger::serial("Serial");
 QLoggingCategory Logger::surface("Surface");
+QLoggingCategory Logger::network("Network");
 
 Logger::Logger(QObject *parent)
     : QObject{parent}
@@ -45,6 +46,7 @@ void Logger::initLog()
         Logger::imageProcessing.setEnabled(QtInfoMsg, false);
         Logger::serial.setEnabled(QtInfoMsg, false);
         Logger::surface.setEnabled(QtInfoMsg, false);
+        Logger::network.setEnabled(QtInfoMsg, false);
     }
 
     if(Config::getInstance().getSetting("Log", "debug") == "false"){
@@ -53,6 +55,7 @@ void Logger::initLog()
         Logger::database.setEnabled(QtDebugMsg, false);
         Logger::imageProcessing.setEnabled(QtDebugMsg, false);
         Logger::surface.setEnabled(QtDebugMsg, false);
+        Logger::network.setEnabled(QtDebugMsg, false);
     }
 
     if(Config::getInstance().getSetting("Log", "warning") == "false"){
@@ -62,6 +65,7 @@ void Logger::initLog()
         Logger::imageProcessing.setEnabled(QtWarningMsg, false);
         Logger::serial.setEnabled(QtWarningMsg, false);
         Logger::surface.setEnabled(QtWarningMsg, false);
+        Logger::network.setEnabled(QtWarningMsg, false);
     }
 
     if(Config::getInstance().getSetting("Log", "critical") == "false"){
@@ -71,6 +75,7 @@ void Logger::initLog()
         Logger::imageProcessing.setEnabled(QtCriticalMsg, false);
         Logger::serial.setEnabled(QtCriticalMsg, false);
         Logger::surface.setEnabled(QtCriticalMsg, false);
+        Logger::network.setEnabled(QtCriticalMsg, false);
     }
 }
 

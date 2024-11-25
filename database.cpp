@@ -43,11 +43,13 @@ void Database::queryLicensePlate(const QString &plate)
             this->appendTimeIn(plate);
             this->changeState(plate, true);
             emit sendPlateToArduino(plate);
+            emit startRequest(name, true);
         }
         else{
             this->appendTimeOut(plate);
             this->changeState(plate, false);
             emit sendPlateToArduino(plate);
+            emit startRequest(name, false);
         }
     }
     else{

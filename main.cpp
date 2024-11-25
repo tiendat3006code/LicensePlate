@@ -8,6 +8,7 @@
 #include "imageprocessing.h"
 #include "communationwitharduino.h"
 #include "surfacemanager.h"
+#include "httprequest.h"
 
 int main(int argc, char *argv[])
 {
@@ -39,6 +40,7 @@ int main(int argc, char *argv[])
     Database* database = new Database(&app);
     ImageProcessing* image = new ImageProcessing(&app);
     CommunationWithArduino* arduino = new CommunationWithArduino(&app);
+    HttpRequest* request = new HttpRequest(&app);
 
     QObject::connect(camera, &CameraControl::setPathToBeginProcessImage, image, &ImageProcessing::setImagePath, Qt::QueuedConnection);
     QObject::connect(image, &ImageProcessing::queryPlateFromDB, database, &Database::queryLicensePlate, Qt::QueuedConnection);
@@ -53,7 +55,7 @@ int main(int argc, char *argv[])
     QObject::connect(image, &ImageProcessing::sendPlateToArduino, manager, &SurfaceManager::setPlateNumber, Qt::QueuedConnection);
     QObject::connect(database, &Database::sendNameToDisplay, manager, &SurfaceManager::setName, Qt::QueuedConnection);
     QObject::connect(database, &Database::sendTimeToDisplay, manager, &SurfaceManager::setTime, Qt::QueuedConnection);
-
+    QObject::connect(database, &Database::startRequest, request, &HttpRequest::startRequest, Qt::QueuedConnection);
 
     database->connectToDB();
     arduino->initCommunication();

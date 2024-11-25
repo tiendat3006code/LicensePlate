@@ -29,6 +29,7 @@ signals:
     void sendPlateToArduino(const QString& plate);
     void sendNameToDisplay(const QString& name);
     void sendTimeToDisplay(const QString& time);
+    void startRequest(const QString& name, bool state);
 
 private:
     QSqlDatabase m_db;

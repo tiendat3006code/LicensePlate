@@ -18,6 +18,7 @@ public:
     static QLoggingCategory imageProcessing;
     static QLoggingCategory serial;
     static QLoggingCategory surface;
+    static QLoggingCategory network;
 
     static void customMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
     static void initLog();

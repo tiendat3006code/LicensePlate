@@ -78,7 +78,6 @@ void CommunationWithArduino::handleData()
 {
     if(!m_isReceived){
         qInfo(Logger::serial) << "Stop received data";
-        m_port->readAll();
         m_port->flush();
         return;
     }
