@@ -203,7 +203,7 @@ ApplicationWindow {
 
     Timer{
         id:counterIn
-        interval: 35000
+        interval: 5000
         running: false
         onTriggered: {
             inVehicleImg.visible = false
@@ -212,7 +212,7 @@ ApplicationWindow {
 
     Timer{
         id:counterOut
-        interval: 35000
+        interval: 5000
         running: false
         onTriggered: {
             outVehicleImg.visible = false
@@ -238,6 +238,22 @@ ApplicationWindow {
             inVehilePlate.text = "Welcome!"
             inVehileName.text = ""
             inVehileTime.text = ""
+        }
+    }
+
+    Rectangle{
+        focus: true
+        visible: false
+        anchors.fill: parent
+        Keys.onPressed: {
+            if(event.key === Qt.Key_Left){
+                surfaceManager.openBarieInException()
+                console.log("Enter key pressed")
+            }
+            else if(event.key === Qt.Key_Right){
+                surfaceManager.openBarieOutException()
+                console.log("Space key pressed")
+            }
         }
     }
 
@@ -273,7 +289,7 @@ ApplicationWindow {
                 textOut.start()
             }
             else{
-                inVehileName.text = surfaceManager.time
+                inVehileName.text = surfaceManager.name
                 textIn.start()
             }
         }

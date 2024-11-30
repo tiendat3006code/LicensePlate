@@ -77,21 +77,22 @@ void CommunationWithArduino::controlHandleReceivedData(bool isReceived)
 void CommunationWithArduino::handleData()
 {
     if(!m_isReceived){
-        qInfo(Logger::serial) << "Stop received data";
+        // qInfo(Logger::serial) << "Stop received data";
         m_port->flush();
         return;
     }
     QByteArray data = m_port->readAll();
-    m_port->flush();
-    if(data.isEmpty() || data.isNull() || data.length() != 1){
+    if(data.isEmpty() || data.isNull() || data.length() != 2){
         qDebug(Logger::serial) << "Data received error";
         return;
     }
     qInfo(Logger::serial) << "Data received: " << QString(data);
-    if(data == "1"){
+    if(data == "11"){
         emit vehicleDetected(Config::getInstance().getSetting("Common", "out_camera").toInt(), true);
+        emit setStateForRequest(true);
     }
-    else if(data == "0"){
+    else if(data == "00"){
         emit vehicleDetected(Config::getInstance().getSetting("Common", "in_camera").toInt(), false);
+        emit setStateForRequest(false);
     }
 }

@@ -33,7 +33,12 @@ QString SurfaceManager::plateNumber() const
 
 void SurfaceManager::setPlateNumber(const QString &newPlateNumber)
 {
-    m_plateNumber = newPlateNumber;
+    if(newPlateNumber == "Invalid"){
+        m_plateNumber = newPlateNumber;
+    }
+    else{
+        m_plateNumber = newPlateNumber.mid(0, newPlateNumber.length() - 2);
+    }
     emit plateNumberChanged();
 }
 
@@ -58,8 +63,21 @@ QString SurfaceManager::name() const
     return m_name;
 }
 
+void SurfaceManager::openBarieInException()
+{
+    qInfo(Logger::surface) << "Open IN vehicle from Surface";
+    emit sendOpenBarieException("IN_OPEN");
+}
+
+void SurfaceManager::openBarieOutException()
+{
+    qInfo(Logger::surface) << "Open OUT vehicle from Surface";
+    emit sendOpenBarieException("OUT_OPEN");
+}
+
 void SurfaceManager::setName(const QString &newName)
 {
+    qInfo(Logger::surface) << "New name: " << newName;
     m_name = newName;
     emit nameChanged();
 }
@@ -71,6 +89,7 @@ QString SurfaceManager::time() const
 
 void SurfaceManager::setTime(const QString &newTime)
 {
+    qInfo(Logger::surface) << "New class: " << newTime;
     m_time = newTime;
     emit timeChanged();
 }

@@ -24,6 +24,7 @@ public slots:
 
 signals:
     void vehicleDetected(int state, bool in_out);
+    void setStateForRequest(bool state);
 
 private:
     QSerialPort* m_port;

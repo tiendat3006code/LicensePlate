@@ -20,11 +20,13 @@ private slots:
     void runImageProcess();
     void startImgeProcessing();
     QString textProcessing(QString& plate);
+    void threadFinished();
 
 signals:
     void queryPlateFromDB(const QString& plate);
     void controlReceivedData(bool isReceived);
     void sendPlateToArduino(const QString& plate);
+    void startRequest(const QString& plate);
 
 private:
     QString m_command;

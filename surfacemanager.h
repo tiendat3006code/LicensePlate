@@ -28,6 +28,9 @@ public:
     QString plateNumber() const;
     QString name() const;
 
+    Q_INVOKABLE void openBarieInException();
+    Q_INVOKABLE void openBarieOutException();
+
 public slots:
     void setPlateNumber(const QString &newPlateNumber);
     void handleDisplayImg(const QString& name, bool in_out);
@@ -40,6 +43,7 @@ signals:
     void plateNumberChanged();
     void nameChanged();
     void timeChanged();
+    void sendOpenBarieException(const QString& data);
 
 private:
     QString m_imagePathIn;

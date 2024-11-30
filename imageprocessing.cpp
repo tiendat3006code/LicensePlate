@@ -3,11 +3,9 @@
 ImageProcessing::ImageProcessing(QObject *parent)
     : QObject{parent}, m_command{"python3"}, m_imageProcess{new QThread(parent)}
 {
-    this->setParent(nullptr);
-    connect(m_imageProcess, &QThread::started, this, &ImageProcessing::startImgeProcessing, Qt::QueuedConnection);
-    connect(m_imageProcess, &QThread::finished, this, [](){
-            qInfo(Logger::imageProcessing) << "Image processing finished";
-        }, Qt::QueuedConnection);
+    // this->setParent(nullptr);
+    // connect(m_imageProcess, &QThread::started, this, &ImageProcessing::startImgeProcessing, Qt::QueuedConnection);
+    // connect(m_imageProcess, &QThread::finished, this, &ImageProcessing::threadFinished, Qt::QueuedConnection);
 }
 
 void ImageProcessing::setImagePath(const QString &path)
@@ -19,15 +17,16 @@ void ImageProcessing::setImagePath(const QString &path)
 
 void ImageProcessing::runImageProcess()
 {
-    if(!m_imageProcess->isRunning()){
-        this->moveToThread(m_imageProcess);
-        m_imageProcess->start();
-        m_imageProcess->setPriority(QThread::HighPriority);
-        qInfo(Logger::imageProcessing) << "Start processing";
-    }
-    else{
-        qInfo(Logger::imageProcessing) << "This thread is still running";
-    }
+    // if(!m_imageProcess->isRunning()){
+    //     this->moveToThread(m_imageProcess);
+    //     m_imageProcess->start();
+    //     m_imageProcess->setPriority(QThread::HighPriority);
+    //     qInfo(Logger::imageProcessing) << "Start processing";
+    // }
+    // else{
+    //     qInfo(Logger::imageProcessing) << "This thread is still running";
+    // }
+    this->startImgeProcessing();
 }
 
 void ImageProcessing::startImgeProcessing()
@@ -36,24 +35,24 @@ void ImageProcessing::startImgeProcessing()
     ps.setWorkingDirectory("/home/pi/License-Plate-Recognition");
     qInfo(Logger::imageProcessing) << "Picture name: "<<m_imagePath;
     QStringList param;
-    param << "printLicensePlate.py" << "-i" << "/home/pi/License-Plate-Recognition/License_Plate_Picture/" + m_imagePath;
+    param << "ocr_detect_plate.py"<< "-i" << "/home/pi/License-Plate-Recognition/License_Plate_Picture/" + m_imagePath;
     ps.start(m_command, param);
     if(!ps.waitForFinished()){
         qCritical(Logger::imageProcessing) << "Error: "<< ps.readAllStandardError();
         // return;
     }
+    // m_imageProcess->quit();
     QString plate = ps.readAllStandardOutput();
     plate = this->textProcessing(plate);
     qInfo(Logger::imageProcessing) << "Plate: "<<plate;
-    if(plate == "0000" || plate.isEmpty() || plate.isNull()){
+    if(plate == "No valid regions detected." || plate.isEmpty() || plate.isNull()){
         qWarning(Logger::imageProcessing) << "No license plate detected";
         emit controlReceivedData(true);
         emit sendPlateToArduino("Invalid");
-        m_imageProcess->quit();
         return;
     }
     emit queryPlateFromDB(plate);
-    m_imageProcess->quit();
+    emit startRequest(plate);
 }
 
 QString ImageProcessing::textProcessing(QString &plate)
@@ -64,7 +63,15 @@ QString ImageProcessing::textProcessing(QString &plate)
         plate = list.last();
         return plate;
     }
+    if(plate.contains("D")){
+        plate.replace("D", "Đ");
+    }
     return plate;
+}
+
+void ImageProcessing::threadFinished()
+{
+    qInfo(Logger::imageProcessing) << "Image processing finished";
 }
 
 

@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     SurfaceManager* manager = new SurfaceManager(&app);
      engine.rootContext()->setContextProperty("surfaceManager", manager);
-    app.setOverrideCursor(QCursor(Qt::BlankCursor));
+    // app.setOverrideCursor(QCursor(Qt::BlankCursor));
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(
         &engine,
@@ -43,19 +43,23 @@ int main(int argc, char *argv[])
     HttpRequest* request = new HttpRequest(&app);
 
     QObject::connect(camera, &CameraControl::setPathToBeginProcessImage, image, &ImageProcessing::setImagePath, Qt::QueuedConnection);
-    QObject::connect(image, &ImageProcessing::queryPlateFromDB, database, &Database::queryLicensePlate, Qt::QueuedConnection);
     QObject::connect(arduino, &CommunationWithArduino::vehicleDetected, camera, &CameraControl::takePicture, Qt::QueuedConnection);
     QObject::connect(camera, &CameraControl::controlReceivedData, arduino, &CommunationWithArduino::controlHandleReceivedData, Qt::QueuedConnection);
-    QObject::connect(database, &Database::controlReceivedData, arduino, &CommunationWithArduino::controlHandleReceivedData, Qt::QueuedConnection);
+    QObject::connect(request, &HttpRequest::controlReceivedData, arduino, &CommunationWithArduino::controlHandleReceivedData, Qt::QueuedConnection);
     QObject::connect(image, &ImageProcessing::controlReceivedData, arduino, &CommunationWithArduino::controlHandleReceivedData, Qt::QueuedConnection);
-    QObject::connect(database, &Database::sendPlateToArduino, arduino, &CommunationWithArduino::sendData, Qt::QueuedConnection);
+    QObject::connect(request, &HttpRequest::sendPlateToArduino, arduino, &CommunationWithArduino::sendData, Qt::QueuedConnection);
     QObject::connect(image, &ImageProcessing::sendPlateToArduino, arduino, &CommunationWithArduino::sendData, Qt::QueuedConnection);
     QObject::connect(camera, &CameraControl::displayImage, manager, &SurfaceManager::handleDisplayImg, Qt::QueuedConnection);
-    QObject::connect(database, &Database::sendPlateToArduino, manager, &SurfaceManager::setPlateNumber, Qt::QueuedConnection);
     QObject::connect(image, &ImageProcessing::sendPlateToArduino, manager, &SurfaceManager::setPlateNumber, Qt::QueuedConnection);
-    QObject::connect(database, &Database::sendNameToDisplay, manager, &SurfaceManager::setName, Qt::QueuedConnection);
-    QObject::connect(database, &Database::sendTimeToDisplay, manager, &SurfaceManager::setTime, Qt::QueuedConnection);
-    QObject::connect(database, &Database::startRequest, request, &HttpRequest::startRequest, Qt::QueuedConnection);
+    QObject::connect(arduino, &CommunationWithArduino::setStateForRequest, request, &HttpRequest::setState, Qt::QueuedConnection);
+    QObject::connect(image, &ImageProcessing::startRequest, request, &HttpRequest::startRequest, Qt::QueuedConnection);
+    QObject::connect(request, &HttpRequest::sendPlateToArduino, manager, &SurfaceManager::setPlateNumber, Qt::QueuedConnection);
+    QObject::connect(request, &HttpRequest::sendNameToDisplay, manager, &SurfaceManager::setName, Qt::QueuedConnection);
+    QObject::connect(request, &HttpRequest::sendClassToDisplay, manager, &SurfaceManager::setTime, Qt::QueuedConnection);
+    QObject::connect(manager, &SurfaceManager::sendOpenBarieException, arduino, &CommunationWithArduino::sendData, Qt::QueuedConnection);
+
+     // QObject::connect(image, &ImageProcessing::queryPlateFromDB, database, &Database::queryLicensePlate, Qt::QueuedConnection);
+    // QObject::connect(database, &Database::startRequest, request, &HttpRequest::startRequest, Qt::QueuedConnection);
 
     database->connectToDB();
     arduino->initCommunication();
