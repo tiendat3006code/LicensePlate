@@ -7,7 +7,6 @@ ApplicationWindow {
     width: Screen.width
     height: Screen.height
     title: qsTr("Smart Parking")
-    flags: Qt.FramelessWindowHint
     id: root
     visible: true
 

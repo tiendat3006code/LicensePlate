@@ -2,6 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QCursor>
+#include <QEventLoop>
 #include "cameracontrol.h"
 #include "database.h"
 #include "logger.h"
@@ -9,6 +10,7 @@
 #include "communationwitharduino.h"
 #include "surfacemanager.h"
 #include "httprequest.h"
+#include "fingersetup.h"
 
 int main(int argc, char *argv[])
 {
@@ -41,6 +43,8 @@ int main(int argc, char *argv[])
     ImageProcessing* image = new ImageProcessing(&app);
     CommunationWithArduino* arduino = new CommunationWithArduino(&app);
     HttpRequest* request = new HttpRequest(&app);
+    FingerSetup* finger = new FingerSetup(&app);
+    QEventLoop loop;
 
     QObject::connect(camera, &CameraControl::setPathToBeginProcessImage, image, &ImageProcessing::setImagePath, Qt::QueuedConnection);
     QObject::connect(arduino, &CommunationWithArduino::vehicleDetected, camera, &CameraControl::takePicture, Qt::QueuedConnection);
@@ -57,9 +61,17 @@ int main(int argc, char *argv[])
     QObject::connect(request, &HttpRequest::sendNameToDisplay, manager, &SurfaceManager::setName, Qt::QueuedConnection);
     QObject::connect(request, &HttpRequest::sendClassToDisplay, manager, &SurfaceManager::setTime, Qt::QueuedConnection);
     QObject::connect(manager, &SurfaceManager::sendOpenBarieException, arduino, &CommunationWithArduino::sendData, Qt::QueuedConnection);
+    QObject::connect(finger, &FingerSetup::verifyPasswordSuccess, &loop, &QEventLoop::quit, Qt::QueuedConnection);
 
      // QObject::connect(image, &ImageProcessing::queryPlateFromDB, database, &Database::queryLicensePlate, Qt::QueuedConnection);
     // QObject::connect(database, &Database::startRequest, request, &HttpRequest::startRequest, Qt::QueuedConnection);
+
+    finger->initializePort();
+    QThread::msleep(1000);
+    qInfo() << "Begin to verify password";
+    finger->passwordVerify();
+    loop.exec();
+    qInfo() << "Verify password success";
 
     database->connectToDB();
     arduino->initCommunication();

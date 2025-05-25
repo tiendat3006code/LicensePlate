@@ -48,6 +48,7 @@ else()
           README.md
           surfacemanager.h surfacemanager.cpp
           httprequest.h httprequest.cpp
+          fingerdefinition.h fingersetup.cpp fingersetup.h
         )
     endif()
 endif()
