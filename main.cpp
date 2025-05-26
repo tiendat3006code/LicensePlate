@@ -66,12 +66,12 @@ int main(int argc, char *argv[])
      // QObject::connect(image, &ImageProcessing::queryPlateFromDB, database, &Database::queryLicensePlate, Qt::QueuedConnection);
     // QObject::connect(database, &Database::startRequest, request, &HttpRequest::startRequest, Qt::QueuedConnection);
 
-    finger->initializePort();
-    QThread::msleep(1000);
-    qInfo() << "Begin to verify password";
-    finger->passwordVerify();
-    loop.exec();
-    qInfo() << "Verify password success";
+    // finger->initializePort();
+    // QThread::msleep(1000);
+    // qInfo() << "Begin to verify password";
+    // finger->passwordVerify();
+    // loop.exec();
+    // qInfo() << "Verify password success";
 
     database->connectToDB();
     arduino->initCommunication();
